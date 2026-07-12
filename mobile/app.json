@@ -1,0 +1,19 @@
+{
+  "expo": {
+    "name": "Forge",
+    "slug": "forge",
+    "scheme": "forge",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#111827"
+      }
+    },
+    "plugins": ["expo-router", "expo-secure-store"]
+  }
+}
