@@ -6,6 +6,8 @@ import {
   BodyweightEntryUpdate,
   BodyweightTrend,
   ExerciseList,
+  ExerciseAnalyticsOption,
+  ExerciseAnalyticsRead,
   ExerciseSet,
   ExerciseSetInput,
   PreviousPerformanceSet,
@@ -134,5 +136,7 @@ export const api = {
     request<WorkoutSession>(`/workout-sessions/${sessionId}/abandon`, { method: "POST" }),
   previousPerformance: (exerciseId: string) =>
     request<PreviousPerformanceSet[]>(`/exercises/${exerciseId}/previous-performance`),
+  exerciseAnalyticsOptions: () => request<ExerciseAnalyticsOption[]>("/exercise-analytics"),
+  exerciseAnalytics: (exerciseId: string) => request<ExerciseAnalyticsRead>(`/exercise-analytics/${exerciseId}`),
   recommendations: () => request<Recommendation[]>("/recommendations")
 };

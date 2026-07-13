@@ -135,6 +135,41 @@ export type PreviousPerformanceSet = {
   set_type: SetType;
 };
 
+export type ExerciseAnalyticsSet = {
+  workout_session_id: string;
+  workout_name: string;
+  completed_at: string;
+  weight_kg: number;
+  repetitions: number;
+  estimated_one_rep_max_kg: number | null;
+};
+
+export type ExerciseAnalyticsTrendPoint = {
+  workout_session_id: string;
+  workout_name: string;
+  completed_at: string;
+  heaviest_weight_kg: number;
+  total_volume_kg: number;
+  best_estimated_one_rep_max_kg: number | null;
+  best_set: ExerciseAnalyticsSet | null;
+};
+
+export type ExerciseAnalyticsOption = {
+  exercise: Exercise;
+  completed_sessions: number;
+  latest_completed_at: string;
+  latest_estimated_one_rep_max_kg: number | null;
+};
+
+export type ExerciseAnalyticsRead = {
+  exercise: Exercise;
+  estimated_one_rep_max_kg: number | null;
+  best_working_set: ExerciseAnalyticsSet | null;
+  heaviest_working_weight_kg: number | null;
+  total_working_volume_kg: number;
+  trend: ExerciseAnalyticsTrendPoint[];
+};
+
 export type Recommendation = {
   id: string;
   exercise_id: string;

@@ -45,3 +45,35 @@ test("sends bodyweight requests with typed payloads and filters", async () => {
     })
   );
 });
+
+test("requests exercise analytics endpoints", async () => {
+  const fetchMock = jest.spyOn(globalThis, "fetch").mockResolvedValue({
+    ok: true,
+    status: 200,
+    json: async () => []
+  } as Response);
+
+  await api.exerciseAnalyticsOptions();
+
+  expect(fetchMock).toHaveBeenCalledWith("http://localhost:8000/api/v1/exercise-analytics", expect.any(Object));
+
+  fetchMock.mockResolvedValueOnce({
+    ok: true,
+    status: 200,
+    json: async () => ({
+      exercise: { id: "bench" },
+      estimated_one_rep_max_kg: null,
+      best_working_set: null,
+      heaviest_working_weight_kg: null,
+      total_working_volume_kg: 0,
+      trend: []
+    })
+  } as Response);
+
+  await api.exerciseAnalytics("bench");
+
+  expect(fetchMock).toHaveBeenLastCalledWith(
+    "http://localhost:8000/api/v1/exercise-analytics/bench",
+    expect.any(Object)
+  );
+});
