@@ -1,3 +1,4 @@
+from app.models.bodyweight import BodyweightEntry
 from app.models.exercise import Exercise
 from app.models.profile import UserProfile
 from app.models.recommendation import ProgressionRecommendation
@@ -8,6 +9,7 @@ from app.models.workout import ExerciseSet, WorkoutSession, WorkoutSessionExerci
 __all__ = [
     "Exercise",
     "ExerciseSet",
+    "BodyweightEntry",
     "ProgressionRecommendation",
     "User",
     "UserProfile",

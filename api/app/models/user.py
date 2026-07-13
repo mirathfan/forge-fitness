@@ -9,6 +9,7 @@ from app.db.session import Base
 from app.models.mixins import TimestampMixin, UUIDPrimaryKeyMixin
 
 if TYPE_CHECKING:
+    from app.models.bodyweight import BodyweightEntry
     from app.models.profile import UserProfile
 
 
@@ -19,3 +20,7 @@ class User(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
 
     profile: Mapped[UserProfile] = relationship(back_populates="user", cascade="all, delete-orphan")
+    bodyweight_entries: Mapped[list[BodyweightEntry]] = relationship(
+        back_populates="user",
+        cascade="all, delete-orphan",
+    )

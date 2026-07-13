@@ -4,6 +4,7 @@ export type ExperienceLevel = "beginner" | "intermediate" | "advanced";
 export type WorkoutStatus = "active" | "completed" | "abandoned";
 export type SetType = "warmup" | "working" | "dropset" | "failure";
 export type RecommendationType = "increase_weight" | "reduce_weight" | "plateau" | "maintain";
+export type BodyweightDirection = "gaining" | "losing" | "stable";
 
 export type Token = {
   access_token: string;
@@ -144,4 +145,40 @@ export type Recommendation = {
   explanation: string;
   created_at: string;
   exercise: Exercise;
+};
+
+export type BodyweightEntryInput = {
+  measured_date: string;
+  weight_kg: number;
+  note?: string | null;
+};
+
+export type BodyweightEntryUpdate = {
+  measured_date?: string;
+  weight_kg?: number;
+  note?: string | null;
+};
+
+export type BodyweightEntry = {
+  id: string;
+  measured_date: string;
+  weight_kg: number;
+  note: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type BodyweightEntryList = {
+  items: BodyweightEntry[];
+  total: number;
+  limit: number;
+  offset: number;
+};
+
+export type BodyweightTrend = {
+  latest_weight_kg: number | null;
+  rolling_average_7d_kg: number | null;
+  change_7d_kg: number | null;
+  change_30d_kg: number | null;
+  direction: BodyweightDirection;
 };

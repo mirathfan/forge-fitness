@@ -1,5 +1,10 @@
 import { clearToken, getToken, setToken } from "@/services/tokenStore";
 import {
+  BodyweightEntry,
+  BodyweightEntryInput,
+  BodyweightEntryList,
+  BodyweightEntryUpdate,
+  BodyweightTrend,
   ExerciseList,
   ExerciseSet,
   ExerciseSetInput,
@@ -85,6 +90,20 @@ export const api = {
     });
     return request<ExerciseList>(`/exercises?${search.toString()}`);
   },
+  bodyweightEntries: (params: { start_date?: string; end_date?: string; limit?: number; offset?: number } = {}) => {
+    const search = new URLSearchParams();
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== "") search.set(key, String(value));
+    });
+    return request<BodyweightEntryList>(`/bodyweight-entries?${search.toString()}`);
+  },
+  bodyweightTrend: () => request<BodyweightTrend>("/bodyweight-entries/trend"),
+  createBodyweightEntry: (payload: BodyweightEntryInput) =>
+    request<BodyweightEntry>("/bodyweight-entries", { method: "POST", body: payload }),
+  updateBodyweightEntry: (entryId: string, payload: BodyweightEntryUpdate) =>
+    request<BodyweightEntry>(`/bodyweight-entries/${entryId}`, { method: "PUT", body: payload }),
+  deleteBodyweightEntry: (entryId: string) =>
+    request<void>(`/bodyweight-entries/${entryId}`, { method: "DELETE" }),
   templates: () => request<WorkoutTemplate[]>("/workout-templates"),
   template: (templateId: string) => request<WorkoutTemplate>(`/workout-templates/${templateId}`),
   createTemplate: (payload: { name: string; description?: string | null; exercises: TemplateExerciseInput[] }) =>

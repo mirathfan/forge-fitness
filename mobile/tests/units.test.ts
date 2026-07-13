@@ -1,4 +1,4 @@
-import { displayVolume, displayWeight, inputWeightToKg, kgToLb, lbToKg } from "@/utils/units";
+import { displayVolume, displayWeight, displayWeightDelta, inputWeightToKg, kgToLb, lbToKg } from "@/utils/units";
 
 test("converts kilograms and pounds", () => {
   expect(Math.round(kgToLb(100))).toBe(220);
@@ -8,6 +8,8 @@ test("converts kilograms and pounds", () => {
 test("formats display weight by unit preference", () => {
   expect(displayWeight(82.5, "kg")).toBe("82.5 kg");
   expect(displayWeight(100, "lb")).toBe("220.5 lb");
+  expect(displayWeightDelta(0.5, "kg")).toBe("+0.5 kg");
+  expect(displayWeightDelta(-0.5, "lb")).toBe("-1.1 lb");
 });
 
 test("formats volume and converts input by unit preference", () => {

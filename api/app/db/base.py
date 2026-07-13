@@ -1,4 +1,5 @@
 from app.models import (
+    BodyweightEntry,
     Exercise,
     ExerciseSet,
     ProgressionRecommendation,
@@ -13,6 +14,7 @@ from app.models import (
 __all__ = [
     "Exercise",
     "ExerciseSet",
+    "BodyweightEntry",
     "ProgressionRecommendation",
     "User",
     "UserProfile",

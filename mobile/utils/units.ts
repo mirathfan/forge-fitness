@@ -13,6 +13,12 @@ export function displayWeight(weightKg: number, unit: WeightUnit): string {
   return `${Number.isInteger(value) ? value.toFixed(0) : value.toFixed(1)} ${unit}`;
 }
 
+export function displayWeightDelta(weightKg: number, unit: WeightUnit): string {
+  const value = unit === "lb" ? kgToLb(weightKg) : weightKg;
+  const sign = value > 0 ? "+" : "";
+  return `${sign}${Number.isInteger(value) ? value.toFixed(0) : value.toFixed(1)} ${unit}`;
+}
+
 export function displayVolume(volumeKg: number, unit: WeightUnit): string {
   const value = unit === "lb" ? kgToLb(volumeKg) : volumeKg;
   return `${Math.round(value).toLocaleString()} ${unit}`;

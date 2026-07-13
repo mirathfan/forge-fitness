@@ -1,12 +1,12 @@
 # Forge Fitness
 
-Forge Fitness is a public portfolio-ready workout tracking foundation. It pairs a typed Expo React Native mobile app with a Dockerized FastAPI and PostgreSQL backend, with the current milestone verified through registration, onboarding, workout template creation, workout logging, history, previous performance, and deterministic progressive-overload recommendations.
+Forge Fitness is a public portfolio-ready workout tracking foundation. It pairs a typed Expo React Native mobile app with a Dockerized FastAPI and PostgreSQL backend, with the current milestone verified through registration, onboarding, workout template creation, workout logging, history, previous performance, deterministic progressive-overload recommendations, and the Milestone 2 bodyweight tracking foundation.
 
-The current release is intentionally focused on the verified workout flow. Bodyweight analytics, nutrition, AI coaching, Apple Health, AWS deployment, social features, payments, and other product expansions are not implemented in this milestone.
+The current release is intentionally focused on the verified workout and bodyweight-entry flows. Nutrition, AI coaching, Apple Health, AWS deployment, social features, payments, and other product expansions are not implemented in this milestone.
 
 ## Product Overview
 
-Forge Fitness demonstrates a production-shaped mobile fitness architecture without overextending the product scope. The app supports account creation, secure token storage, profile onboarding, exercise search, reusable workout templates, active workout tracking, completed workout history, previous performance lookup, and rule-based recommendations.
+Forge Fitness demonstrates a production-shaped mobile fitness architecture without overextending the product scope. The app supports account creation, secure token storage, profile onboarding, exercise search, reusable workout templates, active workout tracking, completed workout history, previous performance lookup, rule-based recommendations, and owned bodyweight entries with simple trend summaries.
 
 This repository is meant to show a complete foundation: backend domain modeling, migrations, seeded reference data, mobile client state management, API integration, Docker orchestration, and regression coverage.
 
@@ -21,6 +21,7 @@ No screenshots are committed yet. When real captures are available, add them und
 | Workout template editor | `docs/screenshots/mobile-template-editor.png` |
 | Active workout logging | `docs/screenshots/mobile-active-workout.png` |
 | Workout summary and history | `docs/screenshots/mobile-summary-history.png` |
+| Progress and bodyweight tracking | `docs/screenshots/mobile-progress-bodyweight.png` |
 
 ## Architecture
 
@@ -83,6 +84,20 @@ The v0.1.0 foundation has been verified end to end against the Docker FastAPI an
 9. Confirm the workout summary, history, previous bench performance, and maintain recommendation.
 10. Start another Push Day and confirm previous bench performance appears.
 11. Reload the app and confirm active workout restoration preserves in-progress workout state.
+
+## Bodyweight Tracking Foundation
+
+Milestone 2 adds the bodyweight foundation without expanding into nutrition, AI, Apple Health, or cloud features:
+
+- User-owned bodyweight entries stored internally in kilograms.
+- One bodyweight entry per user per calendar date.
+- Optional notes on each entry.
+- List filtering by date range with pagination.
+- Update and delete for owned entries only.
+- Trend summary with latest weight, 7-day rolling average, 7-day change, 30-day change, and gaining/losing/stable direction.
+- Progress tab quick entry, preferred-unit input/display, history, edit, delete, loading, empty, and error states.
+
+The rolling average uses recorded entries within the latest seven-calendar-day window and ignores missing days.
 
 ## Docker Setup
 
@@ -148,6 +163,16 @@ The backend exposes:
 | `http://localhost:8000/health` | Liveness check |
 | `http://localhost:8000/ready` | Database readiness check |
 
+Bodyweight API routes are available under `http://localhost:8000/api/v1`:
+
+| Route | Purpose |
+| --- | --- |
+| `POST /bodyweight-entries` | Create an owned bodyweight entry |
+| `GET /bodyweight-entries` | List owned entries with `start_date`, `end_date`, `limit`, and `offset` |
+| `GET /bodyweight-entries/trend` | Return latest weight, rolling average, deltas, and direction |
+| `PUT /bodyweight-entries/{entry_id}` | Update an owned entry |
+| `DELETE /bodyweight-entries/{entry_id}` | Delete an owned entry |
+
 ## Mobile Startup
 
 Install mobile dependencies and start Expo from `mobile/`:
@@ -194,10 +219,10 @@ Current local verification on July 12, 2026:
 
 | Check | Result |
 | --- | --- |
-| API tests | `17 passed` |
+| API tests | `23 passed` |
 | API lint | `ruff check .` passed |
 | API type check | `mypy app` passed |
-| Mobile tests | `5` suites passed, `10` tests passed |
+| Mobile tests | `5` suites passed, `11` tests passed |
 | Mobile lint | `npm run lint` passed |
 | Mobile type check | `npm run typecheck` passed |
 | Expo Doctor | `20/20 checks passed` |
@@ -213,17 +238,18 @@ This is tracked as a dependency ecosystem limitation for the current milestone, 
 
 ## Current Milestone Status
 
-`v0.1.0` represents the verified workout foundation:
+The current main branch represents the verified workout foundation plus the Milestone 2 bodyweight tracking foundation:
 
 - Dockerized backend startup with migrations and seeded exercises.
 - Authenticated mobile workflow from registration through workout completion.
 - Workout templates, active sessions, logged sets, history, previous performance, and deterministic recommendations.
+- Bodyweight entries, history, preferred-unit input/display, and simple trend summaries.
 - API and mobile regression tests.
 - Public portfolio documentation and release tag.
 
 Out of scope for this milestone:
 
-- Bodyweight analytics.
+- Advanced bodyweight analytics beyond the simple trend foundation.
 - Nutrition tracking.
 - AI coaching.
 - Apple Health integration.
