@@ -10,9 +10,10 @@ import { Screen } from "@/components/ui/Screen";
 import { Text } from "@/components/ui/Text";
 import { spacing } from "@/constants/theme";
 import { useForgeTheme } from "@/hooks/useForgeTheme";
-import { api } from "@/services/api";
+import { ApiError, api } from "@/services/api";
 import { queryClient } from "@/services/queryClient";
 import { useActiveWorkoutStore } from "@/stores/activeWorkoutStore";
+import { friendlyWorkoutError } from "@/utils/workoutReliability";
 
 export default function WorkoutsScreen() {
   const theme = useForgeTheme();
@@ -26,7 +27,18 @@ export default function WorkoutsScreen() {
       await queryClient.invalidateQueries({ queryKey: ["sessions"] });
       router.push(`/workout/${session.id}`);
     },
-    onError: (error) => Alert.alert("Workout not started", error instanceof Error ? error.message : "Try again.")
+    onError: async (error) => {
+      if (error instanceof ApiError && error.status === 409) {
+        const activeSessions = await api.activeWorkoutSessions();
+        const existing = activeSessions.items[0];
+        if (existing) {
+          setSession(existing.id);
+          router.push(`/workout/${existing.id}`);
+          return;
+        }
+      }
+      Alert.alert("Workout not started", friendlyWorkoutError(error));
+    }
   });
   const remove = useMutation({
     mutationFn: api.deleteTemplate,

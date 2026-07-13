@@ -25,6 +25,7 @@ class ExerciseSetCreate(BaseModel):
     rpe: float | None = Field(default=None, ge=1, le=10)
     reps_in_reserve: int | None = Field(default=None, ge=0, le=10)
     is_completed: bool = False
+    client_mutation_id: str | None = Field(default=None, min_length=8, max_length=80)
 
 
 class ExerciseSetUpdate(ExerciseSetCreate):
@@ -41,6 +42,7 @@ class ExerciseSetRead(Timestamped):
     reps_in_reserve: int | None
     is_completed: bool
     completed_at: datetime | None
+    client_mutation_id: str | None
 
 
 class WorkoutSessionExerciseRead(BaseModel):

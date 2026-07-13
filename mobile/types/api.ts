@@ -85,6 +85,7 @@ export type ExerciseSetInput = {
   rpe?: number | null;
   reps_in_reserve?: number | null;
   is_completed: boolean;
+  client_mutation_id?: string | null;
 };
 
 export type ExerciseSet = ExerciseSetInput & {
@@ -92,6 +93,7 @@ export type ExerciseSet = ExerciseSetInput & {
   workout_session_exercise_id: string;
   set_number: number;
   completed_at: string | null;
+  client_mutation_id: string | null;
   created_at: string;
   updated_at: string;
 };

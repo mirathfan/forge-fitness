@@ -1,6 +1,7 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { router } from "expo-router";
 import { Activity, Play, Plus } from "lucide-react-native";
+import { useEffect } from "react";
 import { Alert, View } from "react-native";
 
 import { Button } from "@/components/ui/Button";
@@ -9,10 +10,11 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { Screen } from "@/components/ui/Screen";
 import { Text } from "@/components/ui/Text";
 import { spacing } from "@/constants/theme";
-import { api } from "@/services/api";
+import { ApiError, api } from "@/services/api";
 import { queryClient } from "@/services/queryClient";
 import { useActiveWorkoutStore } from "@/stores/activeWorkoutStore";
 import { formatRecommendation } from "@/utils/recommendations";
+import { friendlyWorkoutError } from "@/utils/workoutReliability";
 
 function sameWeek(dateString: string): boolean {
   const date = new Date(dateString);
@@ -37,13 +39,28 @@ export default function HomeScreen() {
       await queryClient.invalidateQueries({ queryKey: ["sessions"] });
       router.push(`/workout/${session.id}`);
     },
-    onError: (error) => Alert.alert("Workout not started", error instanceof Error ? error.message : "Try again.")
+    onError: async (error) => {
+      if (error instanceof ApiError && error.status === 409) {
+        const activeSessions = await api.activeWorkoutSessions();
+        const existing = activeSessions.items[0];
+        if (existing) {
+          setSession(existing.id);
+          router.push(`/workout/${existing.id}`);
+          return;
+        }
+      }
+      Alert.alert("Workout not started", friendlyWorkoutError(error));
+    }
   });
 
   const activeSession = active.data?.items[0];
   const latestWorkout = completed.data?.items[0];
   const weeklyCount = completed.data?.items.filter((workout) => sameWeek(workout.started_at)).length ?? 0;
   const firstTemplate = templates.data?.[0];
+
+  useEffect(() => {
+    if (activeSession) setSession(activeSession.id);
+  }, [activeSession, setSession]);
 
   return (
     <Screen>

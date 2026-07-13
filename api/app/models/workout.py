@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING
 from uuid import UUID
 
-from sqlalchemy import Boolean, DateTime, Enum, ForeignKey, Index, Numeric, String, Text, UniqueConstraint
+from sqlalchemy import Boolean, DateTime, Enum, ForeignKey, Index, Numeric, String, Text, UniqueConstraint, text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.session import Base
@@ -17,7 +17,16 @@ if TYPE_CHECKING:
 
 class WorkoutSession(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     __tablename__ = "workout_sessions"
-    __table_args__ = (Index("ix_sessions_user_status_started", "user_id", "status", "started_at"),)
+    __table_args__ = (
+        Index("ix_sessions_user_status_started", "user_id", "status", "started_at"),
+        Index(
+            "uq_active_session_per_user",
+            "user_id",
+            unique=True,
+            postgresql_where=text("status = 'active'"),
+            sqlite_where=text("status = 'active'"),
+        ),
+    )
 
     user_id: Mapped[UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
     workout_template_id: Mapped[UUID | None] = mapped_column(
@@ -67,7 +76,13 @@ class ExerciseSet(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     __tablename__ = "exercise_sets"
     __table_args__ = (
         UniqueConstraint("workout_session_exercise_id", "set_number", name="uq_exercise_set_number"),
+        UniqueConstraint(
+            "workout_session_exercise_id",
+            "client_mutation_id",
+            name="uq_exercise_set_client_mutation",
+        ),
         Index("ix_sets_session_exercise_completed", "workout_session_exercise_id", "is_completed"),
+        Index("ix_exercise_sets_client_mutation_id", "client_mutation_id"),
     )
 
     workout_session_exercise_id: Mapped[UUID] = mapped_column(
@@ -82,5 +97,6 @@ class ExerciseSet(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     reps_in_reserve: Mapped[int | None]
     is_completed: Mapped[bool] = mapped_column(Boolean, default=False)
     completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    client_mutation_id: Mapped[str | None] = mapped_column(String(80))
 
     workout_session_exercise: Mapped[WorkoutSessionExercise] = relationship(back_populates="sets")

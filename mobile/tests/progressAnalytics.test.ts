@@ -118,6 +118,7 @@ test("weekly training stats include only completed valid working sets", () => {
           rpe: 8,
           reps_in_reserve: null,
           is_completed: true,
+          client_mutation_id: null,
           completed_at: "2026-07-10T18:00:00Z",
           created_at: "2026-07-10T18:00:00Z",
           updated_at: "2026-07-10T18:00:00Z"
@@ -132,6 +133,7 @@ test("weekly training stats include only completed valid working sets", () => {
           rpe: 8,
           reps_in_reserve: null,
           is_completed: true,
+          client_mutation_id: null,
           completed_at: "2026-07-10T18:00:00Z",
           created_at: "2026-07-10T18:00:00Z",
           updated_at: "2026-07-10T18:00:00Z"
@@ -146,6 +148,7 @@ test("weekly training stats include only completed valid working sets", () => {
           rpe: 8,
           reps_in_reserve: null,
           is_completed: false,
+          client_mutation_id: null,
           completed_at: null,
           created_at: "2026-07-10T18:00:00Z",
           updated_at: "2026-07-10T18:00:00Z"
@@ -162,6 +165,7 @@ test("weekly training stats include only completed valid working sets", () => {
           rpe: 8,
           reps_in_reserve: null,
           is_completed: true,
+          client_mutation_id: null,
           completed_at: "2026-06-30T18:00:00Z",
           created_at: "2026-06-30T18:00:00Z",
           updated_at: "2026-06-30T18:00:00Z"

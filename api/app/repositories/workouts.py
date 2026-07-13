@@ -72,3 +72,15 @@ class WorkoutRepository:
                 WorkoutSessionExercise.workout_session_id == session_id,
             )
         )
+
+    def get_set_by_client_mutation(
+        self,
+        session_exercise_id: UUID,
+        client_mutation_id: str,
+    ) -> ExerciseSet | None:
+        return self.db.scalar(
+            select(ExerciseSet).where(
+                ExerciseSet.workout_session_exercise_id == session_exercise_id,
+                ExerciseSet.client_mutation_id == client_mutation_id,
+            )
+        )

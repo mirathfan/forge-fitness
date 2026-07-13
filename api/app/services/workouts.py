@@ -2,6 +2,7 @@ from datetime import UTC, datetime
 from uuid import UUID
 
 from sqlalchemy import func, select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.models.enums import SetType, WorkoutStatus
@@ -91,6 +92,8 @@ class WorkoutService:
 
     def complete(self, user: User, session_id: UUID) -> WorkoutSession:
         session = self.get(user, session_id)
+        if session.status == WorkoutStatus.completed:
+            return session
         if session.status != WorkoutStatus.active:
             raise ConflictError("Only an active workout can be completed")
         now = datetime.now(UTC)
@@ -121,11 +124,15 @@ class WorkoutService:
         payload: ExerciseSetCreate,
     ) -> ExerciseSet:
         session = self.get(user, session_id)
-        if session.status != WorkoutStatus.active:
-            raise ConflictError("Sets can only be logged on an active workout")
         session_exercise = self.workouts.get_session_exercise(session_id, session_exercise_id)
         if session_exercise is None:
             raise NotFoundError("Workout exercise not found")
+        if payload.client_mutation_id is not None:
+            existing = self.workouts.get_set_by_client_mutation(session_exercise_id, payload.client_mutation_id)
+            if existing is not None:
+                return existing
+        if session.status != WorkoutStatus.active:
+            raise ConflictError("Sets can only be logged on an active workout")
         set_number = (
             self.db.scalar(
                 select(func.coalesce(func.max(ExerciseSet.set_number), 0)).where(
@@ -141,7 +148,15 @@ class WorkoutService:
             **payload.model_dump(),
         )
         self.db.add(set_)
-        self.db.commit()
+        try:
+            self.db.commit()
+        except IntegrityError:
+            self.db.rollback()
+            if payload.client_mutation_id is not None:
+                existing = self.workouts.get_set_by_client_mutation(session_exercise_id, payload.client_mutation_id)
+                if existing is not None:
+                    return existing
+            raise
         self.db.refresh(set_)
         return set_
 
@@ -154,6 +169,7 @@ class WorkoutService:
             raise NotFoundError("Set not found")
         update_data = payload.model_dump()
         set_number = update_data.pop("set_number")
+        update_data.pop("client_mutation_id", None)
         if set_number is not None:
             set_.set_number = set_number
         for key, value in update_data.items():

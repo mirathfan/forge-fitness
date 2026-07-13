@@ -1,5 +1,5 @@
 import { PropsWithChildren } from "react";
-import { ScrollView, View } from "react-native";
+import { KeyboardAvoidingView, Platform, ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { spacing } from "@/constants/theme";
@@ -16,7 +16,9 @@ export function Screen({ children, scroll = true }: ScreenProps) {
   );
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: theme.background }}>
-      {scroll ? <ScrollView keyboardShouldPersistTaps="handled">{content}</ScrollView> : content}
+      <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} style={{ flex: 1 }}>
+        {scroll ? <ScrollView keyboardShouldPersistTaps="handled">{content}</ScrollView> : content}
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }

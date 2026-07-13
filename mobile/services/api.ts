@@ -34,6 +34,12 @@ export class ApiError extends Error {
   }
 }
 
+export class NetworkError extends Error {
+  constructor() {
+    super("You appear to be offline. Check your connection and try again.");
+  }
+}
+
 type RequestOptions = Omit<RequestInit, "body"> & {
   body?: unknown;
   auth?: boolean;
@@ -49,11 +55,16 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
     }
   }
 
-  const response = await fetch(`${API_BASE_URL}${path}`, {
-    ...options,
-    headers,
-    body: options.body === undefined ? undefined : JSON.stringify(options.body)
-  });
+  let response: Response;
+  try {
+    response = await fetch(`${API_BASE_URL}${path}`, {
+      ...options,
+      headers,
+      body: options.body === undefined ? undefined : JSON.stringify(options.body)
+    });
+  } catch {
+    throw new NetworkError();
+  }
 
   if (response.status === 401) {
     await clearToken();
@@ -121,6 +132,7 @@ export const api = {
   workoutSessions: (status?: string) =>
     request<WorkoutHistoryList>(`/workout-sessions${status ? `?status=${status}` : ""}`),
   workoutSession: (sessionId: string) => request<WorkoutSession>(`/workout-sessions/${sessionId}`),
+  activeWorkoutSessions: () => request<WorkoutHistoryList>("/workout-sessions?status=active&limit=1"),
   addSet: (sessionId: string, sessionExerciseId: string, payload: ExerciseSetInput) =>
     request<ExerciseSet>(`/workout-sessions/${sessionId}/exercises/${sessionExerciseId}/sets`, {
       method: "POST",

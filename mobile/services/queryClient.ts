@@ -1,5 +1,12 @@
 import { QueryClient } from "@tanstack/react-query";
 
+import { ApiError, NetworkError } from "@/services/api";
+
+export function isRecoverableError(error: unknown): boolean {
+  if (error instanceof NetworkError) return true;
+  return error instanceof ApiError && error.status >= 500;
+}
+
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -12,7 +19,7 @@ export const queryClient = new QueryClient({
       staleTime: 20_000
     },
     mutations: {
-      retry: false
+      retry: (failureCount, error) => isRecoverableError(error) && failureCount < 2
     }
   }
 });
